@@ -7,6 +7,14 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import AgglomerativeClustering
 import pickle
 
+# Ensure required libraries are installed
+try:
+    import scipy
+except ModuleNotFoundError:
+    import os
+    os.system('pip install scipy')
+    import scipy
+
 # Load dataset
 @st.cache_data
 def load_data():
