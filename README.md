@@ -1,4 +1,4 @@
-# 📈 Apple Stock Price Forecasting Dashboard
+# 📈 Apple Stock Price Forecasting System
 
 An end-to-end **time series forecasting project** that combines statistical modeling, data analysis, and interactive visualization to forecast Apple Inc. (AAPL) stock prices.  
 Built as a **production-style Streamlit dashboard** with clean architecture and business-focused storytelling.
