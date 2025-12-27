@@ -1,168 +1,103 @@
-🌍 Global Development Clustering — Interactive Streamlit App
+# 📈 Apple Stock Price Forecasting Dashboard
 
+An end-to-end **time series forecasting project** that combines statistical modeling, data analysis, and interactive visualization to forecast Apple Inc. (AAPL) stock prices.  
+Built as a **production-style Streamlit dashboard** with clean architecture and business-focused storytelling.
 
+---
 
+## 🔍 Project Overview
 
-An interactive Hierarchical Clustering web app built on Streamlit, designed to explore global development indicators across countries.
-Users can visualize dendrograms, select features, adjust cluster count, and view clustered outputs in real time.
+Financial time series forecasting is a core problem in analytics and quantitative decision-making.  
+This project demonstrates how historical stock price data can be transformed into **actionable forward-looking insights** using a structured data science workflow.
 
-🚀 Live Demo
-👉 Launch Streamlit App
+The application allows users to:
+- Explore historical Apple stock prices
+- Generate short- and medium-term forecasts
+- Visually compare historical trends with predicted values
+- Interact with the model through a clean, dashboard-style UI
 
-➡️ https://your-streamlit-app-url
+This project is designed to be **portfolio-ready**, scalable, and aligned with industry practices.
 
-(Replace with your real deployed link when ready.)
+---
 
-📌 About the Project
+## 🎯 Objectives
 
-This project analyzes key global socio-economic indicators and groups countries into meaningful clusters using Agglomerative Clustering (Ward Method).
-The goal is to uncover patterns in global development and offer an intuitive, interactive dashboard for exploration.
+- Build a clean and interpretable stock forecasting pipeline  
+- Apply time series concepts in a real-world financial context  
+- Demonstrate dashboard-driven analytics using Streamlit  
+- Present results in a way that supports **business decision-making**, not just modeling accuracy  
 
-The app includes:
+---
 
-Real-time clustering visualization
+## 🧠 Key Features
 
-Dynamic dendrogram generation
+- Interactive Streamlit dashboard  
+- Configurable forecast horizon  
+- Time series visualization (historical vs forecasted prices)  
+- Modular code structure for easy extension  
+- Business-friendly interpretation of results  
 
-Interactive feature selection
+---
 
-Auto-scaling & preprocessing
+## 🛠️ Tech Stack
 
-Model saving for reuse
+- **Programming Language:** Python  
+- **Data Analysis:** pandas, numpy  
+- **Visualization:** matplotlib, seaborn  
+- **Modeling:** statsmodels, scikit-learn, xgboost  
+- **App Framework:** Streamlit  
+- **Environment Management:** Python virtual environment (venv)  
 
-Built with clarity, modularity, and real-world ML workflows in mind.
+---
 
-🖼️ Screenshots
+## 📂 Project Structure
 
-(Add your own screenshots later — these are placeholders.)
+```
+apple_stock_prediction/
+│
+├── app.py
+├── utils.py
+├── data/
+│   └── AAPL.csv
+├── models/
+├── requirements.txt
+└── README.md
+```
 
-📊 Dendrogram Visualization
-[ Insert image here ]
+---
 
-🌍 Interactive Clustering Output
-[ Insert image here ]
+## 📊 Methodology
 
-🧠 Key Features
-🔹 1. Interactive Feature Selection
+1. Data ingestion and validation  
+2. Exploratory analysis of historical trends  
+3. Forecast generation using statistical and ML-ready pipelines  
+4. Visualization and business interpretation  
 
-Pick any combination of development metrics for clustering.
+---
 
-🔹 2. Auto-Scaling with StandardScaler
+## 🚀 How to Run the App Locally
 
-Ensures consistent distance metrics across variables.
-
-🔹 3. Hierarchical Dendrogram
-
-Powered by SciPy’s linkage and plotted using Matplotlib.
-
-🔹 4. Agglomerative Clustering
-
-Modern sklearn implementation:
-
-AgglomerativeClustering(n_clusters, linkage="ward")
-
-🔹 5. Model Persistence
-
-Model is saved automatically to:
-
-data/hierarchical_model.pkl
-
-🔹 6. Streamlit UI
-
-Fast, clean, minimal, and interactive.
-
-📂 Project Structure
-Clustering_Global_Development/
-│── deployment.py
-│── Clustering_Global_Development.ipynb
-│── Cleaned_World_Development_Measurements.xlsx
-│── Project_clustering.docx
-│── data/
-│     └── hierarchical_model.pkl
-│── README.md
-│── requirements.txt
-
-🧪 How to Run Locally
-1️⃣ Clone the Repository
-git clone https://github.com/your-username/Global-Development-Clustering.git
-cd Global-Development-Clustering
-
-2️⃣ Create & Activate Virtual Environment
+```bash
+git clone https://github.com/your-username/apple_stock_prediction.git
+cd apple_stock_prediction
 python -m venv .venv
-.\.venv\Scripts\activate
-
-3️⃣ Install Dependencies
+.venv\Scripts\activate
 pip install -r requirements.txt
+python -m streamlit run app.py
+```
 
-4️⃣ Run the App
-streamlit run deployment.py
+---
 
-📦 Dependencies
+## 📈 Results & Insights
 
-requirements.txt:
+- Short-term forecasts are more reliable than long-term projections  
+- Outputs are designed for **decision support**, not financial advice  
 
-streamlit
-pandas
-numpy
-scikit-learn
-scipy
-matplotlib
-openpyxl
+---
 
-🧭 Architecture Overview
-Data Loading
+## 🔮 Future Enhancements
 
-Reads cleaned global development dataset
-
-Cached with Streamlit for efficiency
-
-Preprocessing
-
-Drop missing values
-
-Standardize selected features
-
-Modeling
-
-Hierarchical clustering using Ward linkage
-
-Clusters assigned back to dataset
-
-Visualization
-
-SciPy dendrogram
-
-Cluster labels shown in tabular form
-
-Persistence
-
-Model saved via pickle for reproducibility
-
-🌟 Future Enhancements
-
-Add K-Means and DBSCAN clustering
-
-Integrate PCA to visualize clusters in 2D
-
-Add silhouette score comparison
-
-Provide CSV download of clustered results
-
-Deploy a V2 UI with sidebar navigation
-
-Host second version on HuggingFace Spaces
-
-🤝 Contributing
-
-Contributions are welcome!
-Feel free to:
-
-Open issues
-
-Submit pull requests
-
-Suggest features
-
-Improve UI/UX
-
-📬 Contact : nagarajugorantla972@gmail.com
+- ARIMA / SARIMAX tuning  
+- ML-based forecasting models  
+- External indicators (volume, sentiment, macro data)  
+- Cloud deployment  
