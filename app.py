@@ -1,155 +1,115 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import joblib
+import os
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import AgglomerativeClustering
 
-from utils import load_data, get_future_dates
-
-# ------------------------------------------------------------------
-# Page Configuration (Industry Standard)
-# ------------------------------------------------------------------
+# ---------------- CONFIG ----------------
 st.set_page_config(
-    page_title="Apple Stock Forecasting",
-    page_icon="📈",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="🌍 Global Development Clustering",
+    layout="wide"
 )
 
-# ------------------------------------------------------------------
-# App Header
-# ------------------------------------------------------------------
-st.title("Apple Stock Price Forecasting Dashboard")
-st.caption(
-    "End-to-end time series forecasting using statistical and machine learning models. "
-    "Built for analytical decision support, not hype."
-)
+st.title("🌍 Global Development Clustering Explorer")
+st.caption("Interactive ML dashboard for clustering countries based on development indicators")
 
-st.divider()
+# ---------------- PATHS ----------------
+DATA_PATH = os.path.join("data", "Cleaned_World_Development_Measurements.xlsx")
 
-# ------------------------------------------------------------------
-# Sidebar — Control Center
-# ------------------------------------------------------------------
-with st.sidebar:
-    st.header("Configuration")
-
-    forecast_horizon = st.slider(
-        "Forecast Horizon (Days)",
-        min_value=7,
-        max_value=180,
-        value=30,
-        step=7
-    )
-
-    model_type = st.selectbox(
-        "Forecasting Model",
-        options=[
-            "ARIMA (Statistical)",
-            "SARIMAX (Seasonal)",
-            "Machine Learning (Baseline)"
-        ]
-    )
-
-    show_raw_data = st.checkbox("View source dataset")
-
-    st.divider()
-    st.caption("Model parameters are intentionally simplified for clarity.")
-
-# ------------------------------------------------------------------
-# Data Loading
-# ------------------------------------------------------------------
+# ---------------- LOAD DATA ----------------
 @st.cache_data
-def get_dataset():
-    return load_data("data/AAPL.csv")
+def load_data():
+    return pd.read_excel(DATA_PATH)
 
-df = get_dataset()
+df = load_data()
 
-# ------------------------------------------------------------------
-# Optional Raw Data View
-# ------------------------------------------------------------------
-if show_raw_data:
-    st.subheader("Source Dataset")
-    st.dataframe(df.tail(100), use_container_width=True)
+# ---------------- SIDEBAR ----------------
+st.sidebar.header("🔧 Clustering Controls")
 
-# ------------------------------------------------------------------
-# KPI Summary (Executive-Friendly)
-# ------------------------------------------------------------------
-col1, col2, col3 = st.columns(3)
+numeric_cols = df.select_dtypes(include=np.number).columns.tolist()
 
-col1.metric("Records Available", len(df))
-col2.metric("Forecast Horizon (Days)", forecast_horizon)
-col3.metric("Selected Model", model_type.split(" ")[0])
-
-st.divider()
-
-# ------------------------------------------------------------------
-# Forecasting Logic (Placeholder / Extendable)
-# ------------------------------------------------------------------
-st.subheader("Forecast Results")
-
-last_price = df["Close"].iloc[-1]
-future_dates = get_future_dates(df.index[-1], forecast_horizon)
-
-# Simple baseline forecast (replace with real model output)
-forecast_values = np.linspace(
-    last_price,
-    last_price * 1.05,
-    forecast_horizon
+selected_features = st.sidebar.multiselect(
+    "Select features for clustering",
+    numeric_cols,
+    default=numeric_cols[:3]
 )
 
-forecast_df = pd.DataFrame({
-    "Date": future_dates,
-    "Forecasted Price": forecast_values
-})
-
-# ------------------------------------------------------------------
-# Visualization
-# ------------------------------------------------------------------
-fig, ax = plt.subplots(figsize=(14, 6))
-
-ax.plot(df.index[-120:], df["Close"].iloc[-120:], label="Historical Price")
-ax.plot(forecast_df["Date"], forecast_df["Forecasted Price"], linestyle="--", label="Forecast")
-
-ax.set_title("Apple Stock Price Forecast")
-ax.set_xlabel("Date")
-ax.set_ylabel("Price (USD)")
-ax.legend()
-ax.grid(alpha=0.3)
-
-st.pyplot(fig)
-
-# ------------------------------------------------------------------
-# Forecast Table
-# ------------------------------------------------------------------
-st.subheader("Forecasted Values")
-
-styled_forecast = (
-    forecast_df
-    .assign(**{"Forecasted Price": forecast_df["Forecasted Price"].round(2)})
+n_clusters = st.sidebar.slider(
+    "Number of clusters",
+    min_value=2,
+    max_value=6,
+    value=3
 )
 
-st.dataframe(styled_forecast, use_container_width=True)
-
-# ------------------------------------------------------------------
-# Business Interpretation
-# ------------------------------------------------------------------
-st.subheader("Analytical Interpretation")
-
-st.markdown(
-    """
-    - The forecast represents a **model-driven expectation**, not financial advice.
-    - Short-term trends are generally more reliable than long-horizon projections.
-    - This framework supports **scenario testing**, model comparison, and extension
-      to exogenous variables such as volume, macro indicators, or sentiment.
-    """
+country_filter = st.sidebar.multiselect(
+    "Filter countries (optional)",
+    df["Country"].unique()
 )
 
-st.divider()
+# ---------------- DATA FILTER ----------------
+filtered_df = df.copy()
+if country_filter:
+    filtered_df = filtered_df[filtered_df["Country"].isin(country_filter)]
 
-# ------------------------------------------------------------------
-# Footer
-# ------------------------------------------------------------------
-st.caption(
-    "Built with Python, Streamlit, and statistical learning methods. "
-    "Designed for portfolio demonstration and analytical storytelling."
-)
+# ---------------- CLUSTERING ----------------
+if len(selected_features) >= 2:
+    X = filtered_df[selected_features]
+
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    model = AgglomerativeClustering(n_clusters=n_clusters)
+    filtered_df["Cluster"] = model.fit_predict(X_scaled)
+
+    # ---------------- VISUALIZATION ----------------
+    st.subheader("📊 Cluster Visualization")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        x_axis = st.selectbox("X-axis", selected_features, index=0)
+    with col2:
+        y_axis = st.selectbox("Y-axis", selected_features, index=1)
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.scatterplot(
+        data=filtered_df,
+        x=x_axis,
+        y=y_axis,
+        hue="Cluster",
+        palette="tab10",
+        s=80,
+        ax=ax
+    )
+    ax.set_title("Country Clusters")
+    st.pyplot(fig)
+
+    # ---------------- CLUSTER SUMMARY ----------------
+    st.subheader("📈 Cluster Summary")
+
+    summary = (
+        filtered_df
+        .groupby("Cluster")[selected_features]
+        .mean()
+        .round(2)
+    )
+
+    st.dataframe(summary, use_container_width=True)
+
+    # ---------------- COUNTRY VIEW ----------------
+    st.subheader("🌐 Country-Level View")
+
+    selected_country = st.selectbox(
+        "Select a country",
+        filtered_df["Country"].unique()
+    )
+
+    country_row = filtered_df[filtered_df["Country"] == selected_country]
+    st.dataframe(country_row, use_container_width=True)
+
+else:
+    st.warning("⚠️ Please select at least two features for clustering.")
