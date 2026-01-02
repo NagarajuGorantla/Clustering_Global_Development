@@ -23,6 +23,9 @@ DATA_PATH = os.path.join("data", "Cleaned_World_Development_Measurements.xlsx")
 # ---------------- LOAD DATA ----------------
 @st.cache_data
 def load_data():
+    if not os.path.exists(DATA_PATH):
+        st.error(f"❌ Data file not found at: {DATA_PATH}")
+        st.stop()
     return pd.read_excel(DATA_PATH)
 
 df = load_data()
@@ -113,3 +116,4 @@ if len(selected_features) >= 2:
 
 else:
     st.warning("⚠️ Please select at least two features for clustering.")
+
